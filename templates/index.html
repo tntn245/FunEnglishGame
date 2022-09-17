@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/responsive.css">
+    <link rel="stylesheet" href="./static/css/main.css">
+    <link rel="stylesheet" href="./static/js/script.js">
+    <link rel="stylesheet" href="./static/icon/themify-icons-font/themify-icons/themify-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Fun English Game</title>    
+
+</head>
+<body>
+<div id="container_main">
+    <div class="container-fluid containers">
+            <div id="box1" class="row d-flex justify-content-between">
+                <div id="new_dialog" class="col-xl-6">
+                    <div >
+                        <label for="new_dialog" class="label_content">Input new dialog:</label>
+                    </div>
+                    <form method="post" action="new_dialog" id="form_sentences" class="row">
+                    
+                    <div class="box_input col-md-10" >
+                        <input type="text" class="form-control" name="new_dialog" id="input_dialog"></input>
+                    </div>
+                    <button type="submit" class="btn btn-light btn-outline-secondary btn_input col-md-2">Add&nbspdialog</button>
+                    </form>
+                </div>
+        
+                <div id="dialogs" class="col-xl-6 flex-row-reverse">
+                    <!-- <form action="/dialog" method="get"> -->
+                    <div>
+                        <label for="dialogs" class="label_content">Dialogs:</label>
+                    </div>
+                    <div class="row" id="form_dialog">
+                        <div class="box_input col-md-10" name="dialogs">
+                            <select name="name_dialog" id="dialogs_list">
+                            {% for d in Dialog_reverse %}
+                            <form action="{{ url_for('find', id=d['Name']) }}" id="find_{{d['Name']}}" method="get">
+                                <option value="{{d['Name']}}" class="dialog_item" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
+                            </form>
+                            {% endfor %}
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-light btn-outline-secondary btn_input col-md-2" onclick="myFind()">Replay</button>
+
+                    </div>
+                
+                </div>
+            <!-- </form> -->
+
+            <!-- <form action="/action_page.php" method="get">
+                <label for="browser">Choose your browser from the list:</label>
+                <input list="browsers" name="browser" id="browser">
+                <datalist id="browsers">
+                    {% for d in Dialog %}
+                        <option value="{{d['Name']}}" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
+                    {% endfor %}
+                </datalist>
+                <input type="submit">
+              </form> -->
+
+            </div>
+    </div>
+    
+    
+<div class="container-fluid containers">
+<div id="box2" class="row d-flex justify-content-between">
+    <div id="box_sentence_table" class="col-lg-8">
+    <div id="sentences">
+        <form method="post" action="sentences" id="form_sentences">
+            <div>
+                <label for="sentences" class="label_content">Input English sentences here:</label>
+            </div>
+            <div class="row d-flex justify-content-between" id="box_sentences_btn" style="margin:0">
+                <div id="box_input_sentences" class="col-lg-9" style="padding: 0">
+                    <textarea name="sentences" id="input_sentences" ></textarea>
+                </div>
+                <button type="submit" class="btn btn-light btn-outline-secondary col-lg-2" id="btn_add">Add</button>
+            </div>
+        </form>
+        
+    </div>
+    
+    <div id="container_list">
+    <div id="list">
+        <div>
+            <label for="list" class="label_content">List English sentences has been added:</label>
+        </div>
+        
+        <div id="show_db">
+            <table class="table table-bordered table-responsive-sm">
+                <thead class="table-secondary">  
+                    <tr>
+                    <th></th>
+                    <th style="width:60%">Sentence</th>
+                    <th>Receiver</th>
+                    <th>Read</th>
+                    </tr>
+                </thead>
+              
+                <tbody id="table_container">
+                {% for f in feg %}
+                <form action="{{ url_for('get_row', id=f['_id']) }}" method="post" id="get_{{f['_id']}}"
+                    name="get_row_{{f['_id']}}">
+                <tr class="table_row" id="{{f['_id']}}">
+                    <td id="del_row delete" >
+                        <form method="POST" action="{{ url_for('delete', id=f['_id']) }}" id="del_form">
+                            <button type="submit" class="ti-control-play btn_del" 
+                                   onclick="return confirm('Are you sure you want to delete this entry?')"> 
+                            </button>
+                        </form>
+                    </td>
+                    <td>{{ f['sentences'] }}</td>
+                    <td>{{ f['dialog'] }}</td>
+                    <td>
+                    {% if f['Seen'] %}
+                        Y
+                    {% else %}
+                        N
+                    {% endif%}
+                    </td>
+                </tr> 
+                </form>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="box_btn">
+        <div id="box_list" class="d-flex flex-row-reverse">
+            <input class="btn_list btn btn-light btn-outline-secondary" id="skip" type="submit" value="Skip" >
+            <input class="btn_list btn btn-light btn-outline-secondary" id="send_dialog" type="submit" formmethod="post" onclick="myDel()" value="Send Dialog">
+            <input class="btn_list btn btn-light btn-outline-secondary" id="send" type="submit" formmethod="post" value="Send">
+        </div>
+    </div>
+    </div>
+    </div>
+
+
+    <div id="container_player" class="col-lg-3 ">
+        <div id="player">
+            <div>
+                <label for="list" class="label_content">Online Players:</label>
+            </div>
+            <div id="box_player" style="height: calc(100% - 90px - 1rem); margin-bottom: 1rem;">
+                {% for u in Users %}
+                {% if u['Online'] %}
+                    <div class="player_name">{{ u['PCName'] }}</div>
+                {% endif%}
+                {% endfor %}
+            </div>
+            <div id="btn_disable">
+                <input id="disable" class="btn_list btn btn-light btn-outline-secondary" style="width:100%; margin-left: 0;"
+                type="submit" formmethod="post" value="Disable">     
+            </div>
+        </div>
+    </div> 
+   
+</div>
+</div>
+</div>
+<script>
+
+var table = document.getElementById("table_container");
+var this_row = table.getElementsByClassName("table_row");
+
+var btn_skip= document.getElementById("skip");
+var btn_send_dialog= document.getElementById("send_dialog");
+var btn_send= document.getElementById("send");
+
+var current = document.getElementsByClassName("active");
+for (var i = 0; i < this_row.length; i++) {
+this_row[i].addEventListener("click", function() {
+if (current.length > 0) { 
+    current[0].className = current[0].className.replace(" active", "");
+}
+this.className += " active";
+});
+}
+
+btn_skip.addEventListener("click",function(){
+alert(current[0].id);
+current[0].remove();
+})
+btn_send_dialog.addEventListener("click",function(){
+alert(current[0].id);
+})
+btn_send.addEventListener("click",function(){
+alert(current[0].id);
+})
+
+function myDel() {
+var i = "get_" + current[0].id
+document.getElementById(i).submit();
+}
+
+
+
+var players = document.getElementById("box_player");
+var players_name = players.getElementsByClassName("player_name");
+
+var btn_disables= document.getElementById("disable");
+
+var current_player = document.getElementsByClassName("active1");
+for (var i = 0; i < players_name.length; i++) {
+players_name[i].addEventListener("click", function() {
+if (current_player.length > 0) { 
+    current_player[0].className = current_player[0].className.replace(" active1", "");
+}
+this.className += " active1";
+});
+}
+
+btn_disables.addEventListener("click",function(){
+current_player[0].style.display="none"
+})
+
+
+
+
+
+
+var current_dialog = document.getElementsByClassName("active2");
+
+var list = document.getElementById("dialogs_list");
+var this_dialog = list.getElementsByClassName("dialog_item");
+
+for (var i = 0; i < this_dialog.length; i++) {
+this_dialog[i].addEventListener("click", function() {
+if (current_dialog.length > 0) { 
+    current_dialog[0].className = current_dialog[0].className.replace(" active2", "");
+}
+this.className += " active2";
+});
+}
+
+function myFind() {
+var i = "find_" + current_dialog[0].id
+document.getElementById(i).submit();
+}
+
+</script>
+</body>
+</html>
+

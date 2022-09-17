@@ -1,0 +1,37 @@
+@media (min-width: 1200px){
+    #new_dialog{
+        padding-right: 3rem;
+    }
+    #dialogs{
+        padding-left: 3rem;
+    }
+}
+
+@media (max-width: 991.9px){
+    #btn_add{
+        margin-top: 12px;
+    }
+    .player_name{
+        text-align: center;
+    }
+    #box_btn, #box_list{
+        display: block !important;
+        width: 100% !important;
+    }
+    /* 
+    #skip, #send, #send_dialog{
+        margin: 0;
+    } */
+}
+@media (max-width:767.9px){
+    .box_input{
+        padding: 0 !important;
+        margin-bottom: 12px;
+    }
+    #form_sentences, #form_dialog{
+        margin-left:0;
+    }
+    .btn_input{
+        width: 30% !important;
+    }
+}
