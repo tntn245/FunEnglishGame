@@ -31,38 +31,25 @@
                 </div>
         
                 <div id="dialogs" class="col-xl-6 flex-row-reverse">
-                    <!-- <form action="/dialog" method="get"> -->
                     <div>
                         <label for="dialogs" class="label_content">Dialogs:</label>
                     </div>
                     <div class="row" id="form_dialog">
                         <div class="box_input col-md-10" name="dialogs">
-                            <select name="name_dialog" id="dialogs_list">
-                            {% for d in Dialog_reverse %}
-                            <form action="{{ url_for('find', id=d['Name']) }}" id="find_{{d['Name']}}" method="get">
-                                <option value="{{d['Name']}}" class="dialog_item" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
-                            </form>
+                        <form action="replay_dialog" id="replay_dialog" method="post">
+                            <select name="replay_dialog" id="dialogs_list">
+                            {% for d in feg %}
+                                <option value="{{d['_id']}}" class="dialog_item" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
                             {% endfor %}
                             </select>
+                        </form>
                         </div>
 
-                        <button type="submit" class="btn btn-light btn-outline-secondary btn_input col-md-2" onclick="myFind()">Replay</button>
+                        <button type="submit" form="replay_dialog" class="btn btn-light btn-outline-secondary btn_input col-md-2">Replay</button>
 
                     </div>
                 
                 </div>
-            <!-- </form> -->
-
-            <!-- <form action="/action_page.php" method="get">
-                <label for="browser">Choose your browser from the list:</label>
-                <input list="browsers" name="browser" id="browser">
-                <datalist id="browsers">
-                    {% for d in Dialog %}
-                        <option value="{{d['Name']}}" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
-                    {% endfor %}
-                </datalist>
-                <input type="submit">
-              </form> -->
 
             </div>
     </div>
@@ -72,7 +59,8 @@
 <div id="box2" class="row d-flex justify-content-between">
     <div id="box_sentence_table" class="col-lg-8">
     <div id="sentences">
-        <form method="post" action="sentences" id="form_sentences">
+        {% for f in New_Dialog %}
+        <form method="post" action="{{ url_for('sentences', id=f['_id']) }}" id="form_sentences">
             <div>
                 <label for="sentences" class="label_content">Input English sentences here:</label>
             </div>
@@ -83,6 +71,7 @@
                 <button type="submit" class="btn btn-light btn-outline-secondary col-lg-2" id="btn_add">Add</button>
             </div>
         </form>
+        {% endfor %}
         
     </div>
     
@@ -93,6 +82,7 @@
         </div>
         
         <div id="show_db">
+            <form action="send_all_dialog" id="send_all_dialog">
             <table class="table table-bordered table-responsive-sm">
                 <thead class="table-secondary">  
                     <tr>
@@ -104,9 +94,8 @@
                 </thead>
               
                 <tbody id="table_container">
-                {% for f in feg %}
-                <form action="{{ url_for('get_row', id=f['_id']) }}" method="post" id="get_{{f['_id']}}"
-                    name="get_row_{{f['_id']}}">
+                {% for f in todos %}
+                <form action="{{ url_for('get_row', id=f['_id']) }}" method="post" id="get_{{f['_id']}}">
                 <tr class="table_row" id="{{f['_id']}}">
                     <td id="del_row delete" >
                         <form method="POST" action="{{ url_for('delete', id=f['_id']) }}" id="del_form">
@@ -115,8 +104,8 @@
                             </button>
                         </form>
                     </td>
-                    <td>{{ f['sentences'] }}</td>
-                    <td>{{ f['dialog'] }}</td>
+                    <td>{{ f['Sentence'] }}</td>
+                    <td>{{ f['ReceiverName'] }}</td>
                     <td>
                     {% if f['Seen'] %}
                         Y
@@ -129,13 +118,14 @@
                 {% endfor %}
                 </tbody>
             </table>
+            </form>
         </div>
     </div>
     <div id="box_btn">
         <div id="box_list" class="d-flex flex-row-reverse">
             <input class="btn_list btn btn-light btn-outline-secondary" id="skip" type="submit" value="Skip" >
-            <input class="btn_list btn btn-light btn-outline-secondary" id="send_dialog" type="submit" formmethod="post" onclick="myDel()" value="Send Dialog">
-            <input class="btn_list btn btn-light btn-outline-secondary" id="send" type="submit" formmethod="post" value="Send">
+            <input class="btn_list btn btn-light btn-outline-secondary" id="send_dialog" type="submit" formmethod="post" form="send_all_dialog" value="Send Dialog">
+            <input class="btn_list btn btn-light btn-outline-secondary" id="send" type="submit" formmethod="post" onclick="mySent()" value="Send">
         </div>
     </div>
     </div>
@@ -148,23 +138,35 @@
                 <label for="list" class="label_content">Online Players:</label>
             </div>
             <div id="box_player" style="height: calc(100% - 90px - 1rem); margin-bottom: 1rem;">
-                {% for u in Users %}
+                {% for u in user %}
                 {% if u['Online'] %}
-                    <div class="player_name">{{ u['PCName'] }}</div>
+                    <form action="{{ url_for('disable', id=u['_id']) }}" method="post" id="disable_{{ u['_id'] }}">
+                        <div class="player_name" id="{{u['_id']}}">{{ u['PCName'] }}</div>
+                    </form>
                 {% endif%}
                 {% endfor %}
             </div>
             <div id="btn_disable">
                 <input id="disable" class="btn_list btn btn-light btn-outline-secondary" style="width:100%; margin-left: 0;"
-                type="submit" formmethod="post" value="Disable">     
+                type="submit" formmethod="post" onclick="myDisable()" value="Disable">     
             </div>
         </div>
     </div> 
    
 </div>
 </div>
+
+<form method="post" action="new" id="form_sentences" >
+                    
+    <div class="box_input ">
+        <input type="text" class="form-control" name="new" id="input_dialog"></input>
+    </div>
+    <button type="submit" class="btn btn-light btn-outline-secondary btn_input ">Add&nbspdialog</button>
+</form>
+
 </div>
 <script>
+
 
 var table = document.getElementById("table_container");
 var this_row = table.getElementsByClassName("table_row");
@@ -175,30 +177,21 @@ var btn_send= document.getElementById("send");
 
 var current = document.getElementsByClassName("active");
 for (var i = 0; i < this_row.length; i++) {
-this_row[i].addEventListener("click", function() {
-if (current.length > 0) { 
-    current[0].className = current[0].className.replace(" active", "");
-}
-this.className += " active";
-});
+    this_row[i].addEventListener("click", function() {
+    if (current.length > 0) { 
+        current[0].className = current[0].className.replace(" active", "");
+    }
+    this.className += " active";
+    });
 }
 
 btn_skip.addEventListener("click",function(){
-alert(current[0].id);
-current[0].remove();
+    current[0].style.display = "none";
 })
-btn_send_dialog.addEventListener("click",function(){
-alert(current[0].id);
-})
-btn_send.addEventListener("click",function(){
-alert(current[0].id);
-})
-
-function myDel() {
-var i = "get_" + current[0].id
-document.getElementById(i).submit();
+function mySent() {
+    var i = "get_" + current[0].id
+    document.getElementById(i).submit();
 }
-
 
 
 var players = document.getElementById("box_player");
@@ -208,40 +201,17 @@ var btn_disables= document.getElementById("disable");
 
 var current_player = document.getElementsByClassName("active1");
 for (var i = 0; i < players_name.length; i++) {
-players_name[i].addEventListener("click", function() {
-if (current_player.length > 0) { 
-    current_player[0].className = current_player[0].className.replace(" active1", "");
-}
-this.className += " active1";
-});
-}
-
-btn_disables.addEventListener("click",function(){
-current_player[0].style.display="none"
-})
-
-
-
-
-
-
-var current_dialog = document.getElementsByClassName("active2");
-
-var list = document.getElementById("dialogs_list");
-var this_dialog = list.getElementsByClassName("dialog_item");
-
-for (var i = 0; i < this_dialog.length; i++) {
-this_dialog[i].addEventListener("click", function() {
-if (current_dialog.length > 0) { 
-    current_dialog[0].className = current_dialog[0].className.replace(" active2", "");
-}
-this.className += " active2";
-});
+    players_name[i].addEventListener("click", function() {
+    if (current_player.length > 0) { 
+        current_player[0].className = current_player[0].className.replace(" active1", "");
+    }
+    this.className += " active1";
+    });
 }
 
-function myFind() {
-var i = "find_" + current_dialog[0].id
-document.getElementById(i).submit();
+function myDisable() {
+    var i = "disable_" + current_player[0].id
+    document.getElementById(i).submit();
 }
 
 </script>
