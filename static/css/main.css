@@ -21,13 +21,6 @@ html, body {
 #box1{
     margin-right: 0;
 }
-/* #new_dialog{
-    padding-right: 3rem;
-}
-#dialogs{
-    padding-left: 3rem;
-} */
-
 #input_dialog, #dialogs_list, #input_sentences{
     width: 100%;
     height: 100%;
@@ -42,62 +35,9 @@ html, body {
     padding: 8px 0;
 }
 
-.container_input{
-}
-/* .box_input{
-    float: left;
-    width: 78%;
-}
-.btn_input{
-    float: right;
-    width: 20%;
-    display: block;
-    background-color: #fff;
-}
-
-#dialogs_list{
-    text-align:left;
-}
-.dropdown-item{
-    background-color: #fff;
-}*/
-
 #sentences{
     margin-bottom: 3%;
 }
-/*
-#box_input_sentences{
-    float: left;
-    width: 85%;
-}
-#input_sentences{
-    width: 100%;
-    height: 100px;
-}
-#btn_add{
-    padding: 3px;
-    height: 100px;
-    width: 100px;
-    display: block;
-    float: right;
-    margin: auto;
-}
-
-
-
-#container_list{
-}
-#show_db{
-    background-color: #fff;
-    height: 300px;
-    overflow-y: auto;
-    border: solid 1px;
-}
-#del_row{
-    width:5%;
-    padding: 0;
-    display: flex;
-}*/
 #box_btn{
     display: flex;
     flex-direction: row-reverse;
@@ -115,50 +55,12 @@ html, body {
     text-align-last:center;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
-/*
-#container_player{
-    width: 20%;
-}
-#box_player{
-    background-color: #fff;
-    height: 450px;
-    width: 100%;
-    margin-bottom: 1rem;
-    border: 1px solid;
-}*/
+
 .player_name{
     padding: 4px;
     cursor: pointer;
 }
-/*
-#disable{
-    padding: 10px;
-    height: 50px;
-    text-align-last:center;
-}
 
-
-#box_sentence_table{
-    width: 70%;
-    float: left;
-}
-#container_player{
-    float: right;
-} 
-
-#delete{
-}
-
-#del_form{
-    display: block;
-    line-height: 200%;
-}
-#del_input{    
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    border: none;
-}*/
 .btn_del{
     display: block;
     width: 100%;
@@ -202,15 +104,12 @@ html, body {
 #show_db{
     background-color: #fff;
     height: 300px;
-    /* overflow-x: hidden; */
     overflow-y: auto;
     border: 1px solid #6c757d;
 }
 #box_player{
     background-color: #fff;
-    /* height: 450px; */
     width: 100%;
-    /* margin-bottom: 1rem; */
     border: 1px solid #6c757d;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
