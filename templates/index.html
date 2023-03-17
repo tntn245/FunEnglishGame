@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,205 +8,268 @@
     <link rel="stylesheet" href="./static/css/main.css">
     <link rel="stylesheet" href="./static/js/script.js">
     <link rel="stylesheet" href="./static/icon/themify-icons-font/themify-icons/themify-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <title>Fun English Game</title>    
+    <link href="./static/css/bootstrap.min.css" rel="stylesheet">
+    <script src="./static/js/bootstrap.bundle.min.js"></script>
+    <script src="./static/js/jquery.min.js"></script>
+    <title>Fun English Game</title>
 
 </head>
+
 <body>
-<div id="container_main">
-    <div class="container-fluid containers">
+    <div id="container_main">
+        <div class="container-fluid containers" id="container_dialog">
             <div id="box1" class="row d-flex justify-content-between">
                 <div id="new_dialog" class="col-xl-6">
-                    <div >
+                    <div>
                         <label for="new_dialog" class="label_content">Input new dialog:</label>
                     </div>
-                    <form method="post" action="new_dialog" id="form_sentences" class="row">
-                    
-                    <div class="box_input col-md-10" >
-                        <input type="text" class="form-control" name="new_dialog" id="input_dialog"></input>
-                    </div>
-                    <button type="submit" class="btn btn-light btn-outline-secondary btn_input col-md-2">Add&nbspdialog</button>
+                    <form method="post" action="new_dialog" id="form_new_dialog" class="row">
+                        <div class="box_input col-md-10">
+                            <input class="form-control" name="new_dialog" id="input_dialog"
+                                required></input>
+                        </div>
+                        <button type="submit" id="add_dialog"
+                            class="btn btn-light btn-outline-secondary btn_input col-md-2">Add&nbspdialog</button>
                     </form>
                 </div>
-        
+
                 <div id="dialogs" class="col-xl-6 flex-row-reverse">
                     <div>
                         <label for="dialogs" class="label_content">Dialogs:</label>
                     </div>
-                    <div class="row" id="form_dialog">
-                        <div class="box_input col-md-10" name="dialogs">
-                        <form action="replay_dialog" id="replay_dialog" method="post">
-                            <select name="replay_dialog" id="dialogs_list">
-                            {% for d in feg %}
-                                <option value="{{d['_id']}}" class="dialog_item" id="dialog_{{d['Name']}}">{{d['Name']}}</option>
-                            {% endfor %}
-                            </select>
+                    <div>
+                        <form action="form_dialog" method="post" class="row" >
+                            <div class="box_input col-md-10" name="dialogs" id="box_form_dialog">
+                                <select name="form_dialog" id="dialogs_list" >
+                                    {% for dialog in Dialog_reverse %}
+                                    <option value="{{dialog['_id']}}" class="dialog_item" id="dialog_{{dialog['_id']}}" >
+                                        {{dialog['Name']}}                                
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" formaction="show_dialog" id="show_dialog_btn"
+                                    class="ti-angle-down"></button>
+                            </div>
+
+                            <button type="submit" formaction="replay_dialog" id="replay" onclick="Replay()"
+                                class="btn btn-light btn-outline-secondary btn_input col-md-2">Replay</button>
+
                         </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="container-fluid containers">
+            <div id="box2" class="row d-flex justify-content-between">
+                <div id="box_sentence_table" class="col-lg-8">
+                    <div id="sentences">
+                        {% for newdialog in New_Dialog %}
+                        <form method="post" action="{{ url_for('sentences_blueprint.sentences', id=newdialog['_id']) }}"
+                            id="form_sentences">
+                            <div>
+                                <label for="sentences" class="label_content">Input English sentences here:</label>
+                            </div>
+                            <div class="row d-flex justify-content-between" id="box_sentences_btn" style="margin:0">
+                                <div id="box_input_sentences" class="col-lg-9" style="padding: 0">
+                                    <textarea name="sentences" id="input_sentences" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-light btn-outline-secondary col-lg-2"
+                                    id="btn_add">Add</button>
+                            </div>
+                        </form>
+                        {% endfor %}
+                    </div>
+
+                    <div id="container_list">
+                        <div id="list">
+                            <div>
+                                <label for="list" class="label_content">List English sentences has been added:</label>
+                            </div>
+
+                            <div id="show_db">
+                                <table class="table table-bordered table-responsive-sm">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th></th>
+                                            <th style="width:60%">Sentence</th>
+                                            <th>Receiver</th>
+                                            <th>Read</th>
+                                        </tr>
+                                    </thead>
+
+                                    <form action="{{ url_for('send_dialog_blueprint.send_dialog') }}" method="post" id="send_all_dialog">
+                                    </form>
+
+                                    <tbody id="table_container">
+                                        {% for row in EnglishSentence_reverse %}
+                                        {% if row['DialogId'] == show_Dialog %}
+                                        <input type="text" name="show_New_Dialog" value="{{row['DialogId']}}" id="show_New_Dialog" style="display: none;">
+                                        <form action="{{ url_for('skip_blueprint.skip', id=row['_id']) }}" method="post"
+                                            id="skip_{{row['_id']}}">
+                                        </form>
+                                        <form method="post" action="{{ url_for('send_blueprint.get_row', id=row['_id']) }}"
+                                            id="get_{{row['_id']}}">
+                                        {% if row['Sent']%}
+                                            <tr class="table_row_sent disable_active" id="{{row['_id']}}"> 
+                                                <td id="del_row">
+                                                    <div class="ti-control-play btn_del"></div>
+                                                </td>
+                                                <td>{{ row['Sentence'] }}</td>
+                                                <td>{{ row['ReceiverName'] }}</td>
+                                                <td>
+                                                    {% if row['Seen'] %}
+                                                    Y
+                                                    {% else %}
+                                                    N
+                                                    {% endif%}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr class="table_row" id="{{row['_id']}}">
+                                                <td id="del_row">
+                                                    <div class="ti-control-play btn_del"></div>
+                                                </td>
+                                                <td>{{ row['Sentence'] }}</td>
+                                                <td>{{ row['ReceiverName'] }}</td>
+                                                <td>
+                                                    {% if row['Seen'] %}
+                                                    Y
+                                                    {% else %}
+                                                    N
+                                                    {% endif%}
+                                                </td>
+                                            </tr>
+                                        {% endif%}
+                                        </form>
+                                        {% endif%}
+                                        {% endfor %}
+                                    </tbody>
+
+                                </table>
+                            </div>
                         </div>
 
-                        <button type="submit" form="replay_dialog" class="btn btn-light btn-outline-secondary btn_input col-md-2">Replay</button>
+                        <div id="box_btn">
+                            <div id="box_list" class="flex-row-reverse">
+                                <input class="btn_list btn btn-light btn-outline-secondary" id="skip" type="submit"
+                                    formmethod="post" onclick="Skip()" value="Skip" >
+                                <input class="btn_list btn btn-light btn-outline-secondary" id="send_dialog"
+                                    type="submit" formmethod="post" onclick="Send_all()" value="Send Dialog">
+                                <input class="btn_list btn btn-light btn-outline-secondary" id="send" type="submit"
+                                    formmethod="post" onclick="Send()" value="Send">
+                            </div>
 
+                            <!-- <div id="new_user" style="width: 30%; margin: 0;">
+                                <form method="post" action="new_user" class="row" style="padding: 0; height: 100%;">    
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" name="new_user" id="input_dialog" required
+                                        placeholder="Input user" style="height: 100%;"></input>
+                                    </div>
+                                    <div class="col-3">
+                                        <button type="submit" class="btn btn-light btn-outline-secondary btn_input" style="height: 100%;">Add</button>
+                                    </div>
+                                </form>
+                            </div> -->
+                        </div>
                     </div>
-                
+                </div>
+
+                <div id="container_player" class="col-lg-3 ">
+                    <div id="player">
+                        <div>
+                            <label for="list" class="label_content">Online Players:</label>
+                        </div>
+                        <div id="box_player" style="height: calc(100% - 90px - 1rem); margin-bottom: 1rem;">
+                            {% for user in Users %}
+                            {% if user['Online']%}
+                            <form action="{{ url_for('disable_blueprint.disable', id=user['_id']) }}" method="post"
+                                id="disable_{{ user['_id'] }}">
+                                <div class="player_name" id="{{user['_id']}}" style="color: black;">{{ user['PCName'] }}</div>
+                            </form>
+                            {% else %}
+                            <form action="{{ url_for('disable_blueprint.disable', id=user['_id']) }}" method="post"
+                                id="disable_{{ user['_id'] }}">
+                                <div class="player_name" id="{{user['_id']}}" style="color: red;">{{ user['PCName'] }}</div>
+                            </form>
+                            {% endif%}
+                            {% endfor %}
+                        </div>
+                        <div id="btn_disable">
+                            <input id="disable" class="btn_list btn btn-light btn-outline-secondary"
+                                style="width:100%; margin-left: 0;" type="submit" formmethod="post" onclick="Disable(); return false;"
+                                value="Disable">
+                        </div>
+                    </div>
                 </div>
 
             </div>
-    </div>
-    
-    
-<div class="container-fluid containers">
-<div id="box2" class="row d-flex justify-content-between">
-    <div id="box_sentence_table" class="col-lg-8">
-    <div id="sentences">
-        {% for f in New_Dialog %}
-        <form method="post" action="{{ url_for('sentences', id=f['_id']) }}" id="form_sentences">
-            <div>
-                <label for="sentences" class="label_content">Input English sentences here:</label>
-            </div>
-            <div class="row d-flex justify-content-between" id="box_sentences_btn" style="margin:0">
-                <div id="box_input_sentences" class="col-lg-9" style="padding: 0">
-                    <textarea name="sentences" id="input_sentences" ></textarea>
+        </div>
+
+        <!-- <div id="sending_position">
+            <div id="box_sending">
+                <div id="header_sending">
+                    <button id="close_btn" class="btn btn-outline-danger" onclick="Close_sending()">
+                        <div class="ti-close"></div>
+                    </button>
+                    <h2 class="sending">SENDING</h2>
                 </div>
-                <button type="submit" class="btn btn-light btn-outline-secondary col-lg-2" id="btn_add">Add</button>
-            </div>
-        </form>
-        {% endfor %}
+                <div id="send_seen">
+                    <div id="send_alert">
+                        <div class="alert alert-danger" id="btn_sending" style="margin-bottom: 0; padding: 1%;">
+                            <span id="spin_sent" class="spinner-border spinner-border-sm"></span>
+                            <span id="sending_loader">Sending...</span> 
+                        </div>
+                    </div>
         
-    </div>
+                    <div id="seen_alert">
+                        <div class="alert alert-danger" id="btn_seen" style="margin-bottom: 0; padding: 1%;">
+                            <span id="spin_seen" class="spinner-border spinner-border-sm"></span>
+                            <span id="seen_loader">Seen</span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     
-    <div id="container_list">
-    <div id="list">
-        <div>
-            <label for="list" class="label_content">List English sentences has been added:</label>
-        </div>
-        
-        <div id="show_db">
-            <form action="send_all_dialog" id="send_all_dialog">
-            <table class="table table-bordered table-responsive-sm">
-                <thead class="table-secondary">  
-                    <tr>
-                    <th></th>
-                    <th style="width:60%">Sentence</th>
-                    <th>Receiver</th>
-                    <th>Read</th>
-                    </tr>
-                </thead>
-              
-                <tbody id="table_container">
-                {% for f in todos %}
-                <form action="{{ url_for('get_row', id=f['_id']) }}" method="post" id="get_{{f['_id']}}">
-                <tr class="table_row" id="{{f['_id']}}">
-                    <td id="del_row delete" >
-                        <form method="POST" action="{{ url_for('delete', id=f['_id']) }}" id="del_form">
-                            <button type="submit" class="ti-control-play btn_del" 
-                                   onclick="return confirm('Are you sure you want to delete this entry?')"> 
-                            </button>
-                        </form>
-                    </td>
-                    <td>{{ f['Sentence'] }}</td>
-                    <td>{{ f['ReceiverName'] }}</td>
-                    <td>
-                    {% if f['Seen'] %}
-                        Y
-                    {% else %}
-                        N
-                    {% endif%}
-                    </td>
-                </tr> 
-                </form>
-                {% endfor %}
-                </tbody>
-            </table>
-            </form>
-        </div>
-    </div>
-    <div id="box_btn">
-        <div id="box_list" class="d-flex flex-row-reverse">
-            <input class="btn_list btn btn-light btn-outline-secondary" id="skip" type="submit" value="Skip" >
-            <input class="btn_list btn btn-light btn-outline-secondary" id="send_dialog" type="submit" formmethod="post" form="send_all_dialog" value="Send Dialog">
-            <input class="btn_list btn btn-light btn-outline-secondary" id="send" type="submit" formmethod="post" onclick="mySent()" value="Send">
-        </div>
-    </div>
-    </div>
-    </div>
-
-
-    <div id="container_player" class="col-lg-3 ">
-        <div id="player">
-            <div>
-                <label for="list" class="label_content">Online Players:</label>
+        <div id="sending_all_position">
+            <div id="box_sending_all">        
+                <div id="header_sending_all">
+                    <button id="close_btn" class="btn btn-outline-danger" onclick="Close_sending_all()">
+                        <div class="ti-close"></div>
+                    </button>
+                    <h2 class="sending">SENDING DIALOG</h2>
+                </div>
+                <div id="content_sending_all">
+                    <div id="all_sentences">                        
+                    {% for s in Sentences_of_Dialog %}                
+                        <div>{{ s['Sentence'] }}</div>
+                    {% endfor %}
+                    </div>
+                    <div id="send_seen_all">
+                        <div id="send_alert" class="spinner_alert">
+                            <div class="alert alert-danger" id="btn_sending_all" style="margin-bottom: 0; padding: 1%;">
+                                <span id="spin_sent_all" class="spinner-border spinner-border-sm"></span>
+                                <span id="sending_all_loader">Sending...</span> 
+                            </div>
+                        </div>
+                    
+                        <div id="seen_alert" class="spinner_alert">
+                            <div class="alert alert-danger" id="btn_seen_all" style="margin-bottom: 0; padding: 1%;">
+                                <span id="spin_seen_all" class="spinner-border spinner-border-sm"></span>
+                                <span id="seen_all_loader">Seen</span> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="box_player" style="height: calc(100% - 90px - 1rem); margin-bottom: 1rem;">
-                {% for u in user %}
-                {% if u['Online'] %}
-                    <form action="{{ url_for('disable', id=u['_id']) }}" method="post" id="disable_{{ u['_id'] }}">
-                        <div class="player_name" id="{{u['_id']}}">{{ u['PCName'] }}</div>
-                    </form>
-                {% endif%}
-                {% endfor %}
-            </div>
-            <div id="btn_disable">
-                <input id="disable" class="btn_list btn btn-light btn-outline-secondary" style="width:100%; margin-left: 0;"
-                type="submit" formmethod="post" onclick="myDisable()" value="Disable">     
-            </div>
-        </div>
-    </div> 
-   
-</div>
-</div>
-</div>
-    
- 
-<script>
-var table = document.getElementById("table_container");
-var this_row = table.getElementsByClassName("table_row");
+        </div> -->
 
-var btn_skip= document.getElementById("skip");
-var btn_send_dialog= document.getElementById("send_dialog");
-var btn_send= document.getElementById("send");
+    </div>
 
-var current = document.getElementsByClassName("active");
-for (var i = 0; i < this_row.length; i++) {
-    this_row[i].addEventListener("click", function() {
-    if (current.length > 0) { 
-        current[0].className = current[0].className.replace(" active", "");
-    }
-    this.className += " active";
-    });
-}
-
-btn_skip.addEventListener("click",function(){
-    current[0].style.display = "none";
-})
-function mySent() {
-    var i = "get_" + current[0].id
-    document.getElementById(i).submit();
-}
-
-
-var players = document.getElementById("box_player");
-var players_name = players.getElementsByClassName("player_name");
-
-var btn_disables= document.getElementById("disable");
-
-var current_player = document.getElementsByClassName("active1");
-for (var i = 0; i < players_name.length; i++) {
-    players_name[i].addEventListener("click", function() {
-    if (current_player.length > 0) { 
-        current_player[0].className = current_player[0].className.replace(" active1", "");
-    }
-    this.className += " active1";
-    });
-}
-
-function myDisable() {
-    var i = "disable_" + current_player[0].id
-    document.getElementById(i).submit();
-}
-
-</script>
+    <script src="./static/js/script.js"></script>
 </body>
-</html>
 
+</html>
