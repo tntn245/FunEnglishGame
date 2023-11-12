@@ -1,2 +1,2 @@
-dbUrl = 'mongodb://root:123@103.116.106.153:2718/?authMechanism=DEFAULT'
+dbUrl = 'mongodb://root:.../?authMechanism=DEFAULT'
 port = 9999
